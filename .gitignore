@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 config.txt
 .vscode/settings.json
+docker-compose.yml
