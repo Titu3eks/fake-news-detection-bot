@@ -1,2 +1,5 @@
+versioneer
 configparser
 python-telegram-bot
+torch
+transformers
