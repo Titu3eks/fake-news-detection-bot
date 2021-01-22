@@ -33,13 +33,15 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-angry_emojis = ['😠', '😒', '💩', '🤡', '💀']
+angry_emojis = ['😠', '😒', '💩', '🤡', '💀', '👮', '🚨', '💣']
 angry_responses = [ 'FAKE NEWS von', 
                     'Lüg mich nicht an', 
                     'Ich zensier dich gleich', 
                     'Recherchier lieber nochmal',
-                    'Wie kommst du auf sowas Unsinniges']
+                    'Wie kommst du auf so einen Unsinn']
 
+happy_emojis = ['😎', '☺️', '🐮']
+happy_responses = ['Sieht gut aus', 'Alles klar soweit', 'Ich sehe da kein Problem']
 
 
 # setup the ml stuff
@@ -76,14 +78,17 @@ def check_command(update: Update, context: CallbackContext) -> None:
 def reply(force_reply: bool, update: Update, context: CallbackContext) -> None:
     text = update.message.text.replace('/check', '')
     text = text.replace('/Check', '')
-    reply_text = ' '+update.message.chat.first_name+':\n_'+text+'_'
+    name = update.message.chat.first_name
+    if name is not None:
+        name = 'du Lümmel'
+    reply_text = ', '+name+':\n_'+text+'_'
     probability = check(text)
     reply_text = reply_text +'\n ist zu '+str(int(probability*100))+'% eine Verschwörungstheorie'
     if(probability > threshold):
         
         update.message.reply_text(random.choice(angry_emojis)+random.choice(angry_responses)+reply_text, parse_mode="Markdown")
     elif force_reply:
-        update.message.reply_text('😎 Sieht gut aus,'+reply_text, parse_mode="Markdown")
+        update.message.reply_text(random.choice(happy_emojis)+random.choice(happy_responses)+reply_text, parse_mode="Markdown")
 
 
 def check(theory: str):
