@@ -79,7 +79,7 @@ def reply(force_reply: bool, update: Update, context: CallbackContext) -> None:
     text = update.message.text.replace('/check', '')
     text = text.replace('/Check', '')
     name = update.message.chat.first_name
-    if name is not None:
+    if name is None:
         name = 'du Lümmel'
     reply_text = ', '+name+':\n_'+text+'_'
     probability = check(text)
