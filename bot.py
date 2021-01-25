@@ -38,15 +38,16 @@ angry_responses = [ 'FAKE NEWS,',
                     'Lüg mich nicht an,', 
                     'Ich zensier dich gleich,', 
                     'Recherchier lieber nochmal,',
-                    'Wie kommst du auf so einen Unsinn,']
+                    'Wie kommst du auf so einen Unsinn,',
+                    'So will ich nicht nochmal sehen,']
 
 happy_emojis = ['😎', '☺️', '🐮']
 happy_responses = ['Sieht gut aus,', 'Alles klar soweit,', 'Ich sehe da kein Problem,']
 
-excluded_phrases = ['uhh', 'uni hamburg', 'tuhh', 'tu harburg']
-excluded_response = [   'Über so was möchte ich lieber nicht reden,', 
-                        'Bitte nur sinnvolle Anfragen,', 
-                        'Verschwende meine Zeit nicht mit solchen Sachen,']
+excluded_phrases = ['uhh', 'uni hamburg', 'tuhh', 'tu harburg', 'haw hamburg', 'haw ']
+excluded_response = [   ' 😒 Über so was möchte ich lieber nicht reden,', 
+                        ' 😒 Bitte nur sinnvolle Anfragen,', 
+                        ' 😒 Verschwende meine Zeit nicht mit solchen Sachen,']
 
 
 # setup the ml stuff
@@ -94,15 +95,15 @@ def reply(force_reply: bool, update: Update, context: CallbackContext) -> None:
         reply_text = reply_text +'\n ist zu '+str(int(probability*100))+'% eine Verschwörungstheorie'
         if(probability > threshold):
             
-            update.message.reply_text(random.choice(angry_emojis)+random.choice(angry_responses)+reply_text, parse_mode="Markdown")
+            update.message.reply_text(random.choice(angry_emojis)+' '+random.choice(angry_responses)+reply_text, parse_mode="Markdown")
         elif force_reply:
-            update.message.reply_text(random.choice(happy_emojis)+random.choice(happy_responses)+reply_text, parse_mode="Markdown")
+            update.message.reply_text(random.choice(happy_emojis)+' '+random.choice(happy_responses)+reply_text, parse_mode="Markdown")
 
 def check_exclusion(theory: str):
     """return if it should later be ignored"""
     theory_lower_case = theory.lower()
     for phrase in excluded_phrases:
-        if phrase in theory_lower_case
+        if phrase in theory_lower_case:
             return True
     
     return False
@@ -124,9 +125,7 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    #config = configparser.ConfigParser()
-    #config.read('config.txt')
-    #token = config['TELEGRAM']['token']
+
     token = os.environ["token"]
     updater = Updater(token, use_context=True)
 
