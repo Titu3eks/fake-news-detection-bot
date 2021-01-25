@@ -34,20 +34,20 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 angry_emojis = ['😠', '😒', '💩', '🤡', '💀', '👮', '🚨', '💣']
-angry_responses = [ 'FAKE NEWS,', 
-                    'Lüg mich nicht an,', 
-                    'Ich zensier dich gleich,', 
-                    'Recherchier lieber nochmal,',
-                    'Wie kommst du auf so einen Unsinn,',
-                    'So will ich nicht nochmal sehen,']
+angry_responses = [ 'FAKE NEWS', 
+                    'Lüg mich nicht an', 
+                    'Ich zensier dich gleich', 
+                    'Recherchier lieber nochmal',
+                    'Wie kommst du auf so einen Unsinn',
+                    'So etwas  will ich nicht nochmal sehen']
 
 happy_emojis = ['😎', '☺️', '🐮']
 happy_responses = ['Sieht gut aus,', 'Alles klar soweit,', 'Ich sehe da kein Problem,']
 
 excluded_phrases = ['uhh', 'uni hamburg', 'tuhh', 'tu harburg', 'haw hamburg', 'haw ']
-excluded_response = [   ' 😒 Über so was möchte ich lieber nicht reden,', 
-                        ' 😒 Bitte nur sinnvolle Anfragen,', 
-                        ' 😒 Verschwende meine Zeit nicht mit solchen Sachen,']
+excluded_response = [   ' 😒 Über so etwas möchte ich lieber nicht reden', 
+                        ' 😒 Bitte nur sinnvolle Anfragen', 
+                        ' 😒 Verschwende meine Zeit nicht mit solchen Sachen']
 
 
 # setup the ml stuff
