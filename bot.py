@@ -34,14 +34,19 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 angry_emojis = ['😠', '😒', '💩', '🤡', '💀', '👮', '🚨', '💣']
-angry_responses = [ 'FAKE NEWS von', 
-                    'Lüg mich nicht an', 
-                    'Ich zensier dich gleich', 
-                    'Recherchier lieber nochmal',
-                    'Wie kommst du auf so einen Unsinn']
+angry_responses = [ 'FAKE NEWS,', 
+                    'Lüg mich nicht an,', 
+                    'Ich zensier dich gleich,', 
+                    'Recherchier lieber nochmal,',
+                    'Wie kommst du auf so einen Unsinn,']
 
 happy_emojis = ['😎', '☺️', '🐮']
-happy_responses = ['Sieht gut aus', 'Alles klar soweit', 'Ich sehe da kein Problem']
+happy_responses = ['Sieht gut aus,', 'Alles klar soweit,', 'Ich sehe da kein Problem,']
+
+excluded_phrases = ['uhh', 'uni hamburg', 'tuhh', 'tu harburg']
+excluded_response = [   'Über so was möchte ich lieber nicht reden,', 
+                        'Bitte nur sinnvolle Anfragen,', 
+                        'Verschwende meine Zeit nicht mit solchen Sachen,']
 
 
 # setup the ml stuff
@@ -82,14 +87,25 @@ def reply(force_reply: bool, update: Update, context: CallbackContext) -> None:
     if name is None:
         name = 'du Lümmel'
     reply_text = ', '+name+':\n_'+text+'_'
-    probability = check(text)
-    reply_text = reply_text +'\n ist zu '+str(int(probability*100))+'% eine Verschwörungstheorie'
-    if(probability > threshold):
-        
-        update.message.reply_text(random.choice(angry_emojis)+random.choice(angry_responses)+reply_text, parse_mode="Markdown")
-    elif force_reply:
-        update.message.reply_text(random.choice(happy_emojis)+random.choice(happy_responses)+reply_text, parse_mode="Markdown")
+    if check_exclusion(text):
+        update.message.reply_text(random.choice(excluded_response)+reply_text, parse_mode="Markdown")
+    else:
+        probability = check(text)
+        reply_text = reply_text +'\n ist zu '+str(int(probability*100))+'% eine Verschwörungstheorie'
+        if(probability > threshold):
+            
+            update.message.reply_text(random.choice(angry_emojis)+random.choice(angry_responses)+reply_text, parse_mode="Markdown")
+        elif force_reply:
+            update.message.reply_text(random.choice(happy_emojis)+random.choice(happy_responses)+reply_text, parse_mode="Markdown")
 
+def check_exclusion(theory: str):
+    """return if it should later be ignored"""
+    theory_lower_case = theory.lower()
+    for phrase in excluded_phrases:
+        if phrase in theory_lower_case
+            return True
+    
+    return False
 
 def check(theory: str):
     """return if theory is fake or not"""
