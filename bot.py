@@ -111,7 +111,7 @@ def check(theory: str):
     """return if theory is fake or not"""
     logger.info('checking: '+theory)
     inp = tokenizer(theory, padding = True, truncation= True, return_tensors = "pt").to(device)
-    embedding = model(**inp)[0].mean(1)
+    embedding = model(**inp)[1]
     classifier.eval()
     a = torch.nn.Softmax()
     x = a(classifier(embedding)[1])

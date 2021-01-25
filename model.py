@@ -20,7 +20,7 @@ class BinaryClassifier(torch.nn.Module):
         x = self.f3(x)
         loss = 0
         if label:
-            label = torch.LongTensor(label).to(device)
+            label = torch.LongTensor(label).cpu()
             loss_fc = torch.nn.CrossEntropyLoss()
             loss = loss_fc(x, label)
         # todo use softmax, wenn noch labels enabled
