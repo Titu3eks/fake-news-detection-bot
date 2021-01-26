@@ -44,7 +44,9 @@ angry_responses = [ 'FAKE NEWS',
                     'Das ist nicht mehr lustig']
 
 happy_emojis = ['😎', '☺️', '🐮']
-happy_responses = ['Sieht gut aus,', 'Alles klar soweit,', 'Ich sehe da kein Problem,']
+happy_responses = [ 'Sieht gut aus', 
+                    'Alles klar soweit', 
+                    'Ich sehe da kein Problem']
 
 excluded_phrases = ['uhh', 'uni hamburg', 'tuhh', 'tu harburg', 'haw hamburg', 'haw ', 'uni']
 excluded_response = [   ' 😒 Über so etwas möchte ich lieber nicht reden', 
@@ -86,23 +88,28 @@ def check_command(update: Update, context: CallbackContext) -> None:
 def reply(force_reply: bool, update: Update, context: CallbackContext) -> None:
     text = update.message.text.replace('/check', '')
     text = text.replace('/Check', '')
-    name = update.message.chat.first_name
+    user = update.message.from_user
+    name = user.first_name
     if name is None:
-        user = update.message.from_user
-        name = user.first_name
-        if name is None:
-            name = 'du Lümmel'
-    reply_text = ', '+name+':\n_'+text+'_'
+        name = update.message.chat.first_name
+    if name is None:
+        reply_text = ':\n_'+text+'_'
+    else:
+        reply_text = ', '+name+':\n_'+text+'_'
     if check_exclusion(text):
-        update.message.reply_text(random.choice(excluded_response)+reply_text, parse_mode="Markdown")
+        reply_text = random.choice(excluded_response)+reply_text
     else:
         probability = check(text)
         reply_text = reply_text +'\nist zu '+str(int(probability*100))+'% eine Verschwörungstheorie'
         if(probability > threshold):
-            
-            update.message.reply_text(random.choice(angry_emojis)+' '+random.choice(angry_responses)+reply_text, parse_mode="Markdown")
+            # conspiracy
+            reply_text = random.choice(angry_emojis)+' '+random.choice(angry_responses)+reply_text
         elif force_reply:
-            update.message.reply_text(random.choice(happy_emojis)+' '+random.choice(happy_responses)+reply_text, parse_mode="Markdown")
+            # no conspiracy
+            reply_text = random.choice(happy_emojis)+' '+random.choice(happy_responses)+reply_text
+    
+    # send the reply
+    update.message.reply_text(reply_text, parse_mode="Markdown")
 
 def check_exclusion(theory: str):
     """return if it should later be ignored"""
