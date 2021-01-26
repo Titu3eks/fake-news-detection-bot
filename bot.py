@@ -39,12 +39,14 @@ angry_responses = [ 'FAKE NEWS',
                     'Ich zensier dich gleich', 
                     'Recherchier lieber nochmal',
                     'Wie kommst du auf so einen Unsinn',
-                    'So etwas  will ich nicht nochmal sehen']
+                    'So etwas  will ich nicht nochmal sehen',
+                    'So langsam reicht es mir',
+                    'Das ist nicht mehr lustig']
 
 happy_emojis = ['😎', '☺️', '🐮']
 happy_responses = ['Sieht gut aus,', 'Alles klar soweit,', 'Ich sehe da kein Problem,']
 
-excluded_phrases = ['uhh', 'uni hamburg', 'tuhh', 'tu harburg', 'haw hamburg', 'haw ']
+excluded_phrases = ['uhh', 'uni hamburg', 'tuhh', 'tu harburg', 'haw hamburg', 'haw ', 'uni']
 excluded_response = [   ' 😒 Über so etwas möchte ich lieber nicht reden', 
                         ' 😒 Bitte nur sinnvolle Anfragen', 
                         ' 😒 Verschwende meine Zeit nicht mit solchen Sachen']
@@ -86,13 +88,16 @@ def reply(force_reply: bool, update: Update, context: CallbackContext) -> None:
     text = text.replace('/Check', '')
     name = update.message.chat.first_name
     if name is None:
-        name = 'du Lümmel'
+        user = update.message.from_user
+        name = user.first_name
+        if name is None:
+            name = 'du Lümmel'
     reply_text = ', '+name+':\n_'+text+'_'
     if check_exclusion(text):
         update.message.reply_text(random.choice(excluded_response)+reply_text, parse_mode="Markdown")
     else:
         probability = check(text)
-        reply_text = reply_text +'\n ist zu '+str(int(probability*100))+'% eine Verschwörungstheorie'
+        reply_text = reply_text +'\nist zu '+str(int(probability*100))+'% eine Verschwörungstheorie'
         if(probability > threshold):
             
             update.message.reply_text(random.choice(angry_emojis)+' '+random.choice(angry_responses)+reply_text, parse_mode="Markdown")
