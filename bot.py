@@ -150,7 +150,7 @@ def main():
     dispatcher.add_handler(CommandHandler("check", check_command))
 
     # on noncommand i.e message - echo the message on Telegram
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, no_command_reply))
+    # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, no_command_reply))
 
     # Start the Bot
     updater.start_polling()
