@@ -21,7 +21,7 @@ import configparser
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 import random
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoTokenizer, AutoModel, pipeline
 import torch
 from model import BinaryClassifier
 import os
@@ -53,6 +53,7 @@ excluded_response = [   ' 😒 Über so etwas möchte ich lieber nicht reden',
                         ' 😒 Bitte nur sinnvolle Anfragen', 
                         ' 😒 Verschwende meine Zeit nicht mit solchen Sachen']
 
+completion_responses = ['Was hälst du davon', 'Ich habe da eine Idee', 'Besser als das kriegst du das auch nicht', 'Ich hatte schon bessere Einfälle']
 
 # setup the ml stuff
 ## pre-trained
@@ -64,6 +65,10 @@ classifier = BinaryClassifier(768, 2).to(device)
 classifier.load_state_dict(torch.load('classifier.pt'))
 
 threshold = float(os.environ["threshold"])
+
+
+genearator_pipe = pipeline('text-generation', model="dbmdz/german-gpt2",
+                 tokenizer="dbmdz/german-gpt2")
 
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
@@ -134,6 +139,31 @@ def check(theory: str):
     logger.info(x)
     return x[0]
 
+def complete(update: Update, context: CallbackContext) -> None:
+    text = update.message.text.replace('/complete', '')
+    text = text.replace('/Complete', '')
+    text = text.replace('/beende', '')
+    text = text.replace('/Beende', '')
+    print('complete:',text)
+    complete_text = genearator_pipe(text, max_length=50)[0]["generated_text"]
+
+    complete_text = complete_text.replace('/', '')
+    complete_text = complete_text.replace('\\', '')
+
+    user = update.message.from_user
+    name = user.first_name
+    if name is None:
+        name = update.message.chat.first_name
+    if name is None:
+        reply_text = ':\n_'+complete_text+'_'
+    else:
+        reply_text = ', '+name+':\n_'+complete_text+'_'
+
+    
+    reply_text = random.choice(completion_responses)+reply_text
+    # send the reply
+    update.message.reply_text(reply_text, parse_mode="Markdown")
+
 def main():
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
@@ -150,7 +180,8 @@ def main():
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("check", check_command))
-
+    dispatcher.add_handler(CommandHandler("complete", complete))
+    dispatcher.add_handler(CommandHandler("beende", complete))
     # on noncommand i.e message - echo the message on Telegram
     # dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, no_command_reply))
 
